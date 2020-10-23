@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -13,11 +12,11 @@ type BoardInitializer interface {
 type RandomMinesBoardInitializer struct {
 }
 
+// Complexity: O(m * n)
 func (*RandomMinesBoardInitializer) Initialize(board *Board) *Board {
 	rand.Seed(time.Now().UnixNano())
 	minesPositions := rand.Perm(board.NumRows * board.NumCols)[:board.NumMines]
 	isMine := make(map[int]bool, board.NumMines)
-	fmt.Println(minesPositions)
 	for _, minePosition := range minesPositions {
 		isMine[minePosition] = true
 	}
@@ -27,7 +26,7 @@ func (*RandomMinesBoardInitializer) Initialize(board *Board) *Board {
 			if isMine[position] {
 				board.Cells[i][j] = NewMinedCell()
 			} else {
-				board.Cells[i][j] = NewUnminedCell()
+				board.Cells[i][j] = NewSafeCell()
 			}
 		}
 	}

@@ -1,21 +1,36 @@
 package model
 
+import (
+	"errors"
+)
+
 type Cell struct {
-	Mined    bool
-	Flagged  flag
-	Revealed bool
+	Mined     bool
+	Flag      flag
+	Explored  bool
+	NearMines int
 }
 
 func NewMinedCell() *Cell {
-	cell := newBasicCell()
+	cell := newCell()
 	cell.Mined = true
 	return cell
 }
 
-func NewUnminedCell() *Cell {
-	return newBasicCell()
+func NewSafeCell() *Cell {
+	return newCell()
 }
 
-func newBasicCell() *Cell {
-	return &Cell{Flagged: None}
+func newCell() *Cell {
+	return &Cell{Flag: None}
+}
+
+// Returns true if the game should finish
+// Returns an error if the cell is flagged
+func (c *Cell) Explore() (bool, error) {
+	if c.Flag != None {
+		return false, errors.New("can't explore a flagged cell")
+	}
+	c.Explored = true
+	return c.Mined, nil
 }
