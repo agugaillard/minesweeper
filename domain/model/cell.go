@@ -6,7 +6,7 @@ import (
 
 type Cell struct {
 	Mined     bool
-	Flag      flag
+	Flag      Flag
 	Explored  bool
 	NearMines int
 }

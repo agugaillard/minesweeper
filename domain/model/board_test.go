@@ -130,20 +130,20 @@ func TestBoardSolved(t *testing.T) {
 		t.Errorf("unexpected error creating a board")
 		return
 	}
-	for i := board.NumCols - 1; i >= 0 && !board.solved; i-- {
-		for j := board.NumRows - 1; j >= 0 && !board.solved; j-- {
+	for i := board.NumCols - 1; i >= 0 && !board.Solved; i-- {
+		for j := board.NumRows - 1; j >= 0 && !board.Solved; j-- {
 			_, err = board.Explore(Position{i, j})
 		}
 	}
 	cell, _ := board.getCell(Position{0, 0})
 	if cell.Explored {
-		t.Errorf("the board should be solved before reaching this cell")
+		t.Errorf("the board should be Solved before reaching this cell")
 	}
 	if board.Explored != board.NumCols*board.NumRows-board.NumMines {
-		t.Errorf("all cells should be explored when board is solved")
+		t.Errorf("all cells should be explored when board is Solved")
 	}
-	if !board.solved {
-		t.Errorf("the board should be solved")
+	if !board.Solved {
+		t.Errorf("the board should be Solved")
 	}
 }
 
@@ -154,8 +154,8 @@ func TestBoardExploreRecursion(t *testing.T) {
 		return
 	}
 	_, _ = board.Explore(Position{4, 4})
-	if !board.solved {
-		t.Errorf("the board should be solved with one exploration")
+	if !board.Solved {
+		t.Errorf("the board should be Solved with one exploration")
 	}
 }
 

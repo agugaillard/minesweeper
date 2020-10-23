@@ -1,9 +1,9 @@
 package model
 
-type flag string
+type Flag string
 
 const (
-	None         flag = "none"
+	None         Flag = "none"
 	QuestionMark      = "question_mark"
 	RedFlag           = "red_flag"
 )

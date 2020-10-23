@@ -10,12 +10,12 @@ type Board struct {
 	NumMines int
 	Cells    [][]*Cell
 	Explored int
-	solved   bool
+	Solved   bool
 }
 
 type Position struct {
-	Col int
-	Row int
+	Col int `json:"col"`
+	Row int `json:"row"`
 }
 
 func NewBoard(numCols int, numRows int, numMines int, boardInitializer BoardInitializer) (*Board, error) {
@@ -109,7 +109,7 @@ func (board *Board) Explore(position Position) (bool, error) {
 	}
 	board.Explored++
 	if board.Explored == board.NumCols*board.NumRows-board.NumMines {
-		board.solved = true
+		board.Solved = true
 		return true, nil
 	}
 
