@@ -41,6 +41,60 @@ func TestNewGameRoute(t *testing.T) {
 	}
 }
 
+func TestExploreMine(t *testing.T) {
+	r := gin.Default()
+	gameRouter := GameRouter{GameService: &GameServiceTest{}}
+	gameRouter.Routes(r)
+
+	game, _ := gameRouter.GameService.NewGame(3, 3, 2, "")
+	w := httptest.NewRecorder()
+	body, _ := json.Marshal(dto.ExploreCellRequestDto{
+		Position: model.Position{},
+		GameId:   game.Id,
+	})
+	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/explore", bytes.NewBuffer(body))
+	r.ServeHTTP(w, req)
+
+	if w.Code != 200 {
+		t.Errorf("unexpected status code, found " + strconv.Itoa(w.Code) + ", 200 was expected")
+	}
+	var response dto.NewGameResponseDto
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	if err != nil {
+		t.Errorf("error deserializing response")
+	}
+	if !response.Finished {
+		t.Errorf("game should have finished, mine was explored")
+	}
+}
+
+func TestExploreWinGame(t *testing.T) {
+	r := gin.Default()
+	gameRouter := GameRouter{GameService: &GameServiceTest{}}
+	gameRouter.Routes(r)
+
+	game, _ := gameRouter.GameService.NewGame(5, 5, 1, "")
+	w := httptest.NewRecorder()
+	body, _ := json.Marshal(dto.ExploreCellRequestDto{
+		Position: model.Position{Col: 2, Row: 2},
+		GameId:   game.Id,
+	})
+	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/explore", bytes.NewBuffer(body))
+	r.ServeHTTP(w, req)
+
+	if w.Code != 200 {
+		t.Errorf("unexpected status code, found " + strconv.Itoa(w.Code) + ", 200 was expected")
+	}
+	var response dto.NewGameResponseDto
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	if err != nil {
+		t.Errorf("error deserializing response")
+	}
+	if !response.Finished {
+		t.Errorf("game should have finished, all free cell were explored")
+	}
+}
+
 type GameServiceTest struct {
 	service.DefaultGameService
 }
