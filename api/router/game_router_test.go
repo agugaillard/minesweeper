@@ -26,4 +26,13 @@ func TestNewGameRoute(t *testing.T) {
 	if w.Code != 200 {
 		t.Errorf("unexpected status code, found " + strconv.Itoa(w.Code) + ", 200 was expected")
 	}
+
+	var response dto.NewGameResponseDto
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	if err != nil {
+		t.Errorf("error deserializing response")
+	}
+	if response.Board.Cols != 3 || response.Board.Rows != 3 || response.Board.Mines != 2 {
+		t.Errorf("board properties doesn't match")
+	}
 }
