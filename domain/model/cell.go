@@ -34,3 +34,7 @@ func (c *Cell) Explore() (bool, error) {
 	c.Explored = true
 	return c.Mined, nil
 }
+
+func (c *Cell) SetFlag(flag Flag) {
+	c.Flag = flag
+}

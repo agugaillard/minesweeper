@@ -126,6 +126,15 @@ func (board *Board) Explore(position Position) (bool, error) {
 	return false, nil
 }
 
+func (board *Board) Flag(position Position, flag Flag) error {
+	cell, err := board.getCell(position)
+	if err != nil {
+		return err
+	}
+	cell.SetFlag(flag)
+	return nil
+}
+
 // Complexity: O(1)
 func (board Board) filterUnflagged(adjacencies []Position) ([]Position, error) {
 	unflaggedAdjacencies := make([]Position, 0, len(adjacencies))

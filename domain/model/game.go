@@ -32,3 +32,7 @@ func (g *Game) Explore(position Position) error {
 	g.Finished = finish || g.Board.Solved
 	return nil
 }
+
+func (g *Game) Flag(position Position, flag Flag) error {
+	return g.Board.Flag(position, flag)
+}
