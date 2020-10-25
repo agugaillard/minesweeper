@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/agugaillard/minesweeper/api/dto"
+	"github.com/agugaillard/minesweeper/data/cache"
+	"github.com/agugaillard/minesweeper/domain/model"
+	"github.com/agugaillard/minesweeper/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +16,8 @@ import (
 
 func TestNewGameRoute(t *testing.T) {
 	r := gin.Default()
-	GameRoutes(r)
+	gameRouter := GameRouter{GameService: &GameServiceTest{}}
+	gameRouter.Routes(r)
 	w := httptest.NewRecorder()
 	body, _ := json.Marshal(dto.NewGameRequestDto{
 		Cols:  3,
@@ -35,4 +39,39 @@ func TestNewGameRoute(t *testing.T) {
 	if response.Board.Cols != 3 || response.Board.Rows != 3 || response.Board.Mines != 2 {
 		t.Errorf("board properties doesn't match")
 	}
+}
+
+type GameServiceTest struct {
+	service.DefaultGameService
+}
+
+func (service *GameServiceTest) NewGame(cols int, rows int, mines int, username model.Username) (*model.Game, error) {
+	game, err := model.NewGame(cols, rows, mines, username)
+	board, _ := model.NewBoard(cols, rows, mines, &AllTogetherMinesBoardInitializer{})
+	game.Board = board
+	if err != nil {
+		return nil, err
+	}
+	err = cache.GameCache.New(game)
+	if err != nil {
+		return nil, err
+	}
+	return game, nil
+}
+
+type AllTogetherMinesBoardInitializer struct{}
+
+func (*AllTogetherMinesBoardInitializer) Initialize(board *model.Board) *model.Board {
+	minesPlaced := 0
+	for i := 0; i < board.NumCols; i++ {
+		for j := 0; j < board.NumRows; j++ {
+			if minesPlaced < board.NumMines {
+				board.Cells[i][j] = model.NewMinedCell()
+				minesPlaced++
+			} else {
+				board.Cells[i][j] = model.NewSafeCell()
+			}
+		}
+	}
+	return board
 }

@@ -2,18 +2,21 @@ package router
 
 import (
 	"github.com/agugaillard/minesweeper/api/dto"
-	"github.com/agugaillard/minesweeper/domain/model"
 	"github.com/agugaillard/minesweeper/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func GameRoutes(r *gin.Engine) {
-	r.POST("/game", newGameHandler)
-	r.POST("/game/:id/explore", exploreCellHandler)
+type GameRouter struct {
+	GameService service.GameService
 }
 
-func newGameHandler(context *gin.Context) {
+func (router *GameRouter) Routes(r *gin.Engine) {
+	r.POST("/game", router.newGameHandler)
+	r.POST("/game/:id/explore", router.exploreCellHandler)
+}
+
+func (router *GameRouter) newGameHandler(context *gin.Context) {
 	var newGameDto dto.NewGameRequestDto
 	err := context.BindJSON(&newGameDto)
 	if err != nil {
@@ -22,7 +25,7 @@ func newGameHandler(context *gin.Context) {
 		})
 		return
 	}
-	game, err := service.NewGame(newGameDto.Cols, newGameDto.Rows, newGameDto.Mines, "")
+	game, err := router.GameService.NewGame(newGameDto.Cols, newGameDto.Rows, newGameDto.Mines, "")
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"error": "unexpected error creating the game",
@@ -32,13 +35,21 @@ func newGameHandler(context *gin.Context) {
 	context.JSON(http.StatusOK, dto.NewGameDto(game))
 }
 
-func exploreCellHandler(context *gin.Context) {
-	var position model.Position
-	err := context.BindJSON(&position)
+func (router *GameRouter) exploreCellHandler(context *gin.Context) {
+	var exploreCellRequest dto.ExploreCellRequestDto
+	err := context.BindJSON(&exploreCellRequest)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid payload",
 		})
 		return
 	}
+	game, err := router.GameService.ExploreCell(exploreCellRequest.GameId, exploreCellRequest.Position)
+	if err != nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"error": "game not found",
+		})
+		return
+	}
+	context.JSON(http.StatusOK, dto.NewGameDto(game))
 }
