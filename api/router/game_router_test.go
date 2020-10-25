@@ -95,6 +95,30 @@ func TestExploreWinGame(t *testing.T) {
 	}
 }
 
+func TestFlagCell(t *testing.T) {
+	r := gin.Default()
+	gameRouter := GameRouter{GameService: &GameServiceTest{}}
+	gameRouter.Routes(r)
+
+	game, _ := gameRouter.GameService.NewGame(5, 5, 1, "")
+	w := httptest.NewRecorder()
+	body, _ := json.Marshal(dto.FlagCellRequestDto{
+		Position: model.Position{Col: 4, Row: 4},
+		GameId:   game.Id,
+		Flag:     model.RedFlag,
+	})
+	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/flag", bytes.NewBuffer(body))
+	r.ServeHTTP(w, req)
+
+	if w.Code != 200 {
+		t.Errorf("unexpected status code, found " + strconv.Itoa(w.Code) + ", 200 was expected")
+	}
+
+	if game.Board.Cells[4][4].Flag != model.RedFlag {
+		t.Errorf("redflag was expected")
+	}
+}
+
 type GameServiceTest struct {
 	service.DefaultGameService
 }
