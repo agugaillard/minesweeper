@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/agugaillard/minesweeper/api/dto"
-	"github.com/agugaillard/minesweeper/domain/model"
+	"github.com/agugaillard/minesweeper/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -20,7 +20,7 @@ func newGameHandler(context *gin.Context) {
 		})
 		return
 	}
-	game, err := model.NewGame(newGameDto.Cols, newGameDto.Rows, newGameDto.Mines, "")
+	game, err := service.NewGame(newGameDto.Cols, newGameDto.Rows, newGameDto.Mines, "")
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"error": "unexpected error creating the game",
