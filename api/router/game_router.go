@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/agugaillard/minesweeper/api/dto"
+	"github.com/agugaillard/minesweeper/domain/model"
 	"github.com/agugaillard/minesweeper/service"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 
 func GameRoutes(r *gin.Engine) {
 	r.POST("/game", newGameHandler)
+	r.POST("/game/:id/explore", exploreCellHandler)
 }
 
 func newGameHandler(context *gin.Context) {
@@ -28,4 +30,15 @@ func newGameHandler(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, dto.NewGameDto(game))
+}
+
+func exploreCellHandler(context *gin.Context) {
+	var position model.Position
+	err := context.BindJSON(&position)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid payload",
+		})
+		return
+	}
 }
