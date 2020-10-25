@@ -9,6 +9,7 @@ type GameService interface {
 	NewGame(cols int, rows int, mines int, username model.Username) (*model.Game, error)
 	GetGame(id string) (*model.Game, error)
 	ExploreCell(gameId string, position model.Position) (*model.Game, error)
+	FlagCell(gameId string, position model.Position, flag model.Flag) error
 }
 
 type DefaultGameService struct {
@@ -42,4 +43,12 @@ func (service *DefaultGameService) ExploreCell(gameId string, position model.Pos
 	_ = game.Explore(position)
 	_ = cache.GameCache.Update(game)
 	return game, nil
+}
+
+func (service *DefaultGameService) FlagCell(gameId string, position model.Position, flag model.Flag) error {
+	game, err := service.GetGame(gameId)
+	if err != nil {
+		return err
+	}
+	return game.Flag(position, flag)
 }

@@ -14,6 +14,7 @@ type GameRouter struct {
 func (router *GameRouter) Routes(r *gin.Engine) {
 	r.POST("/game", router.newGameHandler)
 	r.POST("/game/:id/explore", router.exploreCellHandler)
+	r.POST("/game/:id/flag", router.flagCellHandler)
 }
 
 func (router *GameRouter) newGameHandler(context *gin.Context) {
@@ -52,4 +53,21 @@ func (router *GameRouter) exploreCellHandler(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusOK, dto.NewGameDto(game))
+}
+
+func (router *GameRouter) flagCellHandler(context *gin.Context) {
+	var flagCellRequest dto.FlagCellRequestDto
+	err := context.BindJSON(&flagCellRequest)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid payload",
+		})
+		return
+	}
+	err = router.GameService.FlagCell(flagCellRequest.GameId, flagCellRequest.Position, flagCellRequest.Flag)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
 }
