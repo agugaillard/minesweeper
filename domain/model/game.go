@@ -24,6 +24,11 @@ func NewGame(numCols int, numRows int, numMines int, username Username) (*Game, 
 	return &Game{Id: id.String(), Start: time.Now(), Owner: username, Board: board}, nil
 }
 
-func (g *Game) Explore(position Position) {
-	_, _ = g.Board.Explore(position)
+func (g *Game) Explore(position Position) error {
+	finish, err := g.Board.Explore(position)
+	if err != nil {
+		return err
+	}
+	g.Finished = finish || g.Board.Solved
+	return nil
 }
