@@ -33,9 +33,14 @@ func (service *DefaultGameService) NewGame(cols int, rows int, mines int, userna
 // Errors: GameNotFound
 func (service *DefaultGameService) GetGame(id string) (*model.Game, error) {
 	game, err := cache.GameCache.Get(id)
+	if err == nil {
+		return game, nil
+	}
+	game, err = redis.GameRedis.Get(id)
 	if err != nil {
 		return nil, err
 	}
+	_ = cache.GameCache.New(game)
 	return game, nil
 }
 
