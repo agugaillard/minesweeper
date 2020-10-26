@@ -15,7 +15,8 @@ func handleError(context *gin.Context, err error) bool {
 		case modelError.InvalidBoardProperties,
 			modelError.InvalidPosition,
 			modelError.ExploreFlagged,
-			apiError.InvalidParameter:
+			apiError.InvalidParameter,
+			modelError.InteractFinished:
 			status = http.StatusBadRequest
 		case dataError.GameNotFound:
 			status = http.StatusNotFound

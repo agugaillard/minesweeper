@@ -45,7 +45,7 @@ func (service *DefaultGameService) GetGame(id string) (*model.Game, error) {
 	return game, nil
 }
 
-// Errors: ExploreFlagged, InvalidPosition, GameNotFound
+// Errors: ExploreFlagged, InvalidPosition, GameNotFound, InteractFinished
 func (service *DefaultGameService) ExploreCell(gameId string, position model.Position) (*model.Game, error) {
 	game, err := service.GetGame(gameId)
 	if err != nil {
@@ -59,7 +59,7 @@ func (service *DefaultGameService) ExploreCell(gameId string, position model.Pos
 	return game, nil
 }
 
-// Errors: GameNotFound, InvalidPosition
+// Errors: GameNotFound, InvalidPosition, InteractFinished
 func (service *DefaultGameService) FlagCell(gameId string, position model.Position, flag model.Flag) error {
 	game, err := service.GetGame(gameId)
 	if err != nil {
