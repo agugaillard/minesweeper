@@ -25,9 +25,13 @@ func handleError(context *gin.Context, err error) bool {
 		default:
 			status = http.StatusInternalServerError
 		}
-		context.JSON(status, gin.H{
-			"error": err.Error(),
-		})
+		if status != http.StatusInternalServerError {
+			context.JSON(status, gin.H{
+				"error": err.Error(),
+			})
+		} else {
+			context.Status(http.StatusInternalServerError)
+		}
 		return false
 	}
 	return true
