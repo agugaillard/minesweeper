@@ -1,7 +1,7 @@
 package model
 
 import (
-	"errors"
+	modelError "github.com/agugaillard/minesweeper/domain/error"
 )
 
 type Cell struct {
@@ -26,10 +26,10 @@ func newCell() *Cell {
 }
 
 // Returns true if the game should finish
-// Returns an error if the cell is flagged
+// Errors: ExploreFlagged
 func (c *Cell) Explore() (bool, error) {
 	if c.Flag != None {
-		return false, errors.New("can't explore a flagged cell")
+		return false, modelError.ExploreFlagged
 	}
 	c.Explored = true
 	return c.Mined, nil

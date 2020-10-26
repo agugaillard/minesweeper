@@ -1,7 +1,6 @@
 package model
 
 import (
-	"errors"
 	"github.com/google/uuid"
 	"time"
 )
@@ -15,15 +14,17 @@ type Game struct {
 	Finished bool
 }
 
+// Errors: InvalidNumberOfMines
 func NewGame(numCols int, numRows int, numMines int, username Username) (*Game, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
-		return nil, errors.New("unexpected error creating a game")
+		return nil, err
 	}
 	board, err := NewRandomBoard(numCols, numRows, numMines)
 	return &Game{Id: id.String(), Start: time.Now(), Owner: username, Board: board}, nil
 }
 
+// Errors: InvalidPosition, ExploreFlagged
 func (g *Game) Explore(position Position) error {
 	finish, err := g.Board.Explore(position)
 	if err != nil {
@@ -33,6 +34,7 @@ func (g *Game) Explore(position Position) error {
 	return nil
 }
 
+// Errors: InvalidPosition
 func (g *Game) Flag(position Position, flag Flag) error {
 	return g.Board.Flag(position, flag)
 }

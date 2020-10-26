@@ -15,6 +15,7 @@ type GameService interface {
 type DefaultGameService struct {
 }
 
+// Errors: InvalidNumberOfMines
 func (service *DefaultGameService) NewGame(cols int, rows int, mines int, username model.Username) (*model.Game, error) {
 	game, err := model.NewGame(cols, rows, mines, username)
 	if err != nil {
@@ -27,6 +28,7 @@ func (service *DefaultGameService) NewGame(cols int, rows int, mines int, userna
 	return game, nil
 }
 
+// Errors: GameNotFound
 func (service *DefaultGameService) GetGame(id string) (*model.Game, error) {
 	game, err := cache.GameCache.Get(id)
 	if err != nil {
@@ -35,16 +37,21 @@ func (service *DefaultGameService) GetGame(id string) (*model.Game, error) {
 	return game, nil
 }
 
+// Errors: ExploreFlagged, InvalidPosition, GameNotFound
 func (service *DefaultGameService) ExploreCell(gameId string, position model.Position) (*model.Game, error) {
 	game, err := service.GetGame(gameId)
 	if err != nil {
 		return nil, err
 	}
-	_ = game.Explore(position)
+	err = game.Explore(position)
+	if err != nil {
+		return nil, err
+	}
 	_ = cache.GameCache.Update(game)
 	return game, nil
 }
 
+// Errors: GameNotFound, InvalidPosition
 func (service *DefaultGameService) FlagCell(gameId string, position model.Position, flag model.Flag) error {
 	game, err := service.GetGame(gameId)
 	if err != nil {
