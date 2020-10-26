@@ -6,9 +6,10 @@ import (
 )
 
 type NewGameRequestDto struct {
-	Cols  int `json:"cols"`
-	Rows  int `json:"rows"`
-	Mines int `json:"mines"`
+	Cols     int            `json:"cols"`
+	Rows     int            `json:"rows"`
+	Mines    int            `json:"mines"`
+	Username model.Username `json:"username"`
 }
 
 type NewGameResponseDto struct {

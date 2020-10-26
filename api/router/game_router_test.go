@@ -23,6 +23,7 @@ func TestNewGameRoute(t *testing.T) {
 		Cols:  3,
 		Rows:  3,
 		Mines: 2,
+		Username: "user",
 	})
 	req, _ := http.NewRequest("POST", "/game", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
@@ -46,10 +47,11 @@ func TestExploreMine(t *testing.T) {
 	gameRouter := GameRouter{GameService: &GameServiceTest{}}
 	gameRouter.Routes(r)
 
-	game, _ := gameRouter.GameService.NewGame(3, 3, 2, "")
+	game, _ := gameRouter.GameService.NewGame(3, 3, 2, "user")
 	w := httptest.NewRecorder()
 	body, _ := json.Marshal(dto.ExploreCellRequestDto{
 		Position: model.Position{},
+		Username: "user",
 	})
 	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/explore", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
@@ -72,10 +74,11 @@ func TestExploreWinGame(t *testing.T) {
 	gameRouter := GameRouter{GameService: &GameServiceTest{}}
 	gameRouter.Routes(r)
 
-	game, _ := gameRouter.GameService.NewGame(5, 5, 1, "")
+	game, _ := gameRouter.GameService.NewGame(5, 5, 1, "user")
 	w := httptest.NewRecorder()
 	body, _ := json.Marshal(dto.ExploreCellRequestDto{
 		Position: model.Position{Col: 2, Row: 2},
+		Username: "user",
 	})
 	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/explore", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
@@ -98,11 +101,12 @@ func TestFlagCell(t *testing.T) {
 	gameRouter := GameRouter{GameService: &GameServiceTest{}}
 	gameRouter.Routes(r)
 
-	game, _ := gameRouter.GameService.NewGame(5, 5, 1, "")
+	game, _ := gameRouter.GameService.NewGame(5, 5, 1, "user")
 	w := httptest.NewRecorder()
 	body, _ := json.Marshal(dto.FlagCellRequestDto{
 		Position: model.Position{Col: 4, Row: 4},
 		Flag:     model.RedFlag,
+		Username: "user",
 	})
 	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/flag", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)

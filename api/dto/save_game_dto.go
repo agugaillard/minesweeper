@@ -2,8 +2,6 @@ package dto
 
 import "github.com/agugaillard/minesweeper/domain/model"
 
-type FlagCellRequestDto struct {
-	model.Position
+type SaveGameRequestDto struct {
 	Username model.Username `json:"username"`
-	Flag     model.Flag     `json:"flag"`
 }

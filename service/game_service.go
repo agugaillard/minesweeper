@@ -12,6 +12,7 @@ type GameService interface {
 	ExploreCell(gameId string, position model.Position) (*model.Game, error)
 	FlagCell(gameId string, position model.Position, flag model.Flag) error
 	Save(gameId string) error
+	GetOwner(gameId string) (model.Username, error)
 }
 
 type DefaultGameService struct {
@@ -78,4 +79,12 @@ func (service *DefaultGameService) Save(gameId string) error {
 		_ = redis.GameRedis.Update(game)
 	}
 	return nil
+}
+
+func (service *DefaultGameService) GetOwner(gameId string) (model.Username, error) {
+	game, err := cache.GameCache.Get(gameId)
+	if err != nil {
+		return "", err
+	}
+	return game.Owner, nil
 }

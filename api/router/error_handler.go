@@ -1,6 +1,7 @@
 package router
 
 import (
+	apiError "github.com/agugaillard/minesweeper/api/error"
 	dataError "github.com/agugaillard/minesweeper/data/error"
 	modelError "github.com/agugaillard/minesweeper/domain/error"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,8 @@ func handleError(context *gin.Context, err error) bool {
 			status = http.StatusNotFound
 		case dataError.GameAlreadyExists:
 			status = http.StatusInternalServerError
+		case apiError.Unauthorized:
+			status = http.StatusForbidden
 		default:
 			status = http.StatusInternalServerError
 		}
