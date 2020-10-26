@@ -12,7 +12,7 @@ type NewGameRequestDto struct {
 	Username model.Username `json:"username"`
 }
 
-type NewGameResponseDto struct {
+type GameResponseDto struct {
 	Id       string            `json:"id"`
 	Start    time.Time         `json:"start"`
 	End      time.Time         `json:"end"`
@@ -21,8 +21,8 @@ type NewGameResponseDto struct {
 	Finished bool              `json:"finished"`
 }
 
-func NewGameDto(game *model.Game) *NewGameResponseDto {
-	return &NewGameResponseDto{
+func NewGameDto(game *model.Game) *GameResponseDto {
+	return &GameResponseDto{
 		Id:       game.Id,
 		Start:    game.Start,
 		End:      game.End,
@@ -33,12 +33,12 @@ func NewGameDto(game *model.Game) *NewGameResponseDto {
 }
 
 type boardResponseDto struct {
-	Cols     int                  `json:"cols"`
-	Rows     int                  `json:"rows"`
-	Mines    int                  `json:"mines"`
-	Cells    [][]*CellResponseDto `json:"cells"`
-	Explored int                  `json:"explored"`
-	Solved   bool                 `json:"solved"`
+	Cols     int                `json:"cols"`
+	Rows     int                `json:"rows"`
+	Mines    int                `json:"mines"`
+	Cells    []*CellResponseDto `json:"cells"`
+	Explored int                `json:"explored"`
+	Solved   bool               `json:"solved"`
 }
 
 func newBoardDto(board *model.Board) *boardResponseDto {
@@ -46,7 +46,7 @@ func newBoardDto(board *model.Board) *boardResponseDto {
 		Cols:     board.NumCols,
 		Rows:     board.NumRows,
 		Mines:    board.NumMines,
-		Cells:    newCellsDtoMatrix(board.Cells),
+		Cells:    matrixToArray(board.Cells),
 		Explored: board.Explored,
 		Solved:   board.Solved,
 	}
@@ -71,18 +71,14 @@ func NewCellDto(cell *model.Cell) *CellResponseDto {
 	}
 }
 
-func newCellsDtoMatrix(cells [][]*model.Cell) [][]*CellResponseDto {
-	cols := len(cells)
-	rows := len(cells[0])
-	cellsDto := make([][]*CellResponseDto, cols)
-	for i := range cells {
-		cellsDto[i] = make([]*CellResponseDto, rows)
-	}
-	for i := 0; i < cols; i++ {
-		for j := 0; j < rows; j++ {
-			cellsDto[i][j] = NewCellDto(cells[i][j])
-			cellsDto[i][j].Col, cellsDto[i][j].Col = i, j
+func matrixToArray(cells [][]*model.Cell) []*CellResponseDto {
+	arrayDto := make([]*CellResponseDto, len(cells)*len(cells[0]))
+	for i := 0; i < len(cells); i++ {
+		for j := 0; j < len(cells[0]); j++ {
+			cellDto := NewCellDto(cells[i][j])
+			cellDto.Position = model.Position{Col: i, Row: j}
+			arrayDto = append(arrayDto, cellDto)
 		}
 	}
-	return cellsDto
+	return arrayDto
 }

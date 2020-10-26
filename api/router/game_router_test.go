@@ -32,7 +32,7 @@ func TestNewGameRoute(t *testing.T) {
 		t.Errorf("unexpected status code, found " + strconv.Itoa(w.Code) + ", 200 was expected")
 	}
 
-	var response dto.NewGameResponseDto
+	var response dto.GameResponseDto
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	if err != nil {
 		t.Errorf("error deserializing response")
@@ -59,7 +59,7 @@ func TestExploreMine(t *testing.T) {
 	if w.Code != 200 {
 		t.Errorf("unexpected status code, found " + strconv.Itoa(w.Code) + ", 200 was expected")
 	}
-	var response dto.NewGameResponseDto
+	var response dto.GameResponseDto
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	if err != nil {
 		t.Errorf("error deserializing response")
@@ -86,7 +86,7 @@ func TestExploreWinGame(t *testing.T) {
 	if w.Code != 200 {
 		t.Errorf("unexpected status code, found " + strconv.Itoa(w.Code) + ", 200 was expected")
 	}
-	var response dto.NewGameResponseDto
+	var response dto.GameResponseDto
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	if err != nil {
 		t.Errorf("error deserializing response")
