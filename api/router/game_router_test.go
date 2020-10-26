@@ -50,7 +50,6 @@ func TestExploreMine(t *testing.T) {
 	w := httptest.NewRecorder()
 	body, _ := json.Marshal(dto.ExploreCellRequestDto{
 		Position: model.Position{},
-		GameId:   game.Id,
 	})
 	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/explore", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
@@ -77,7 +76,6 @@ func TestExploreWinGame(t *testing.T) {
 	w := httptest.NewRecorder()
 	body, _ := json.Marshal(dto.ExploreCellRequestDto{
 		Position: model.Position{Col: 2, Row: 2},
-		GameId:   game.Id,
 	})
 	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/explore", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
@@ -104,7 +102,6 @@ func TestFlagCell(t *testing.T) {
 	w := httptest.NewRecorder()
 	body, _ := json.Marshal(dto.FlagCellRequestDto{
 		Position: model.Position{Col: 4, Row: 4},
-		GameId:   game.Id,
 		Flag:     model.RedFlag,
 	})
 	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/flag", bytes.NewBuffer(body))

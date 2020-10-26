@@ -37,7 +37,7 @@ func (router *GameRouter) exploreCellHandler(context *gin.Context) {
 	if ok := handleError(context, err); !ok {
 		return
 	}
-	game, err := router.GameService.ExploreCell(exploreCellRequest.GameId, exploreCellRequest.Position)
+	game, err := router.GameService.ExploreCell(context.Param("id"), exploreCellRequest.Position)
 	if ok := handleError(context, err); !ok {
 		return
 	}
@@ -50,7 +50,7 @@ func (router *GameRouter) flagCellHandler(context *gin.Context) {
 	if ok := handleError(context, err); !ok {
 		return
 	}
-	err = router.GameService.FlagCell(flagCellRequest.GameId, flagCellRequest.Position, flagCellRequest.Flag)
+	err = router.GameService.FlagCell(context.Param("id"), flagCellRequest.Position, flagCellRequest.Flag)
 	if ok := handleError(context, err); !ok {
 		return
 	}
