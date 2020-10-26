@@ -22,12 +22,16 @@ func (router *GameRouter) Routes(r *gin.Engine) {
 }
 
 func (router *GameRouter) newGameHandler(context *gin.Context) {
-	var newGameDto dto.NewGameRequestDto
-	err := context.BindJSON(&newGameDto)
+	var newGameRequest dto.NewGameRequestDto
+	err := context.BindJSON(&newGameRequest)
 	if ok := handleError(context, err); !ok {
 		return
 	}
-	game, err := router.GameService.NewGame(newGameDto.Cols, newGameDto.Rows, newGameDto.Mines, newGameDto.Username)
+	if newGameRequest.Username == "" {
+		handleError(context, apiError.InvalidParameter)
+		return
+	}
+	game, err := router.GameService.NewGame(newGameRequest.Cols, newGameRequest.Rows, newGameRequest.Mines, newGameRequest.Username)
 	if ok := handleError(context, err); !ok {
 		return
 	}
@@ -38,6 +42,10 @@ func (router *GameRouter) exploreCellHandler(context *gin.Context) {
 	var exploreCellRequest dto.ExploreCellRequestDto
 	err := context.BindJSON(&exploreCellRequest)
 	if ok := handleError(context, err); !ok {
+		return
+	}
+	if exploreCellRequest.Username == "" {
+		handleError(context, apiError.InvalidParameter)
 		return
 	}
 	err = router.handleAuth(context.Param("id"), exploreCellRequest.Username)
@@ -57,6 +65,10 @@ func (router *GameRouter) flagCellHandler(context *gin.Context) {
 	if ok := handleError(context, err); !ok {
 		return
 	}
+	if flagCellRequest.Username == "" {
+		handleError(context, apiError.InvalidParameter)
+		return
+	}
 	err = router.handleAuth(context.Param("id"), flagCellRequest.Username)
 	if ok := handleError(context, err); !ok {
 		return
@@ -73,6 +85,10 @@ func (router *GameRouter) saveHandler(context *gin.Context) {
 	if ok := handleError(context, err); !ok {
 		return
 	}
+	if saveGameRequest.Username == "" {
+		handleError(context, apiError.InvalidParameter)
+		return
+	}
 	err = router.handleAuth(context.Param("id"), saveGameRequest.Username)
 	if ok := handleError(context, err); !ok {
 		return
@@ -87,6 +103,10 @@ func (router *GameRouter) resumeHandler(context *gin.Context) {
 	var resumeGameRequest dto.ResumeGameRequestDto
 	err := context.BindJSON(&resumeGameRequest)
 	if ok := handleError(context, err); !ok {
+		return
+	}
+	if resumeGameRequest.Username == "" {
+		handleError(context, apiError.InvalidParameter)
 		return
 	}
 	err = router.handleAuth(context.Param("id"), resumeGameRequest.Username)
