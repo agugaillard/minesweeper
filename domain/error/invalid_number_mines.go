@@ -1,10 +1,10 @@
 package error
 
-type invalidNumberOfMines struct {
+type invalidBoardProperties struct {
 }
 
-func (inm *invalidNumberOfMines) Error() string {
+func (inm *invalidBoardProperties) Error() string {
 	return "invalid number of mines"
 }
 
-var InvalidNumberOfMines = &invalidNumberOfMines{}
+var InvalidBoardProperties = &invalidBoardProperties{}

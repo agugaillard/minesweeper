@@ -12,7 +12,7 @@ func handleError(context *gin.Context, err error) bool {
 	if err != nil {
 		var status int
 		switch err {
-		case modelError.InvalidNumberOfMines,
+		case modelError.InvalidBoardProperties,
 			modelError.InvalidPosition,
 			modelError.ExploreFlagged:
 			status = http.StatusBadRequest

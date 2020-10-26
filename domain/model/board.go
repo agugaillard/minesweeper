@@ -18,10 +18,10 @@ type Position struct {
 	Row int `json:"row"`
 }
 
-// Errors: InvalidNumberOfMines
+// Errors: InvalidBoardProperties
 func NewBoard(numCols int, numRows int, numMines int, boardInitializer BoardInitializer) (*Board, error) {
 	if numMines <= 0 || numMines >= numCols*numRows {
-		return nil, modelError.InvalidNumberOfMines
+		return nil, modelError.InvalidBoardProperties
 	}
 	cells := newCellsMatrix(numCols, numRows)
 	board := &Board{NumCols: numCols, NumRows: numRows, NumMines: numMines, Cells: cells}
@@ -30,7 +30,7 @@ func NewBoard(numCols int, numRows int, numMines int, boardInitializer BoardInit
 	return board, nil
 }
 
-// Errors: InvalidNumberOfMines
+// Errors: InvalidBoardProperties
 func NewRandomBoard(numCols int, numRows int, numMines int) (*Board, error) {
 	return NewBoard(numCols, numRows, numMines, &RandomMinesBoardInitializer{})
 }
