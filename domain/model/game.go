@@ -31,6 +31,9 @@ func (g *Game) Explore(position Position) error {
 		return err
 	}
 	g.Finished = finish || g.Board.Solved
+	if g.Finished {
+		g.End = time.Now()
+	}
 	return nil
 }
 

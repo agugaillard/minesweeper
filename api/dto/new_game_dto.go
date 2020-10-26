@@ -15,7 +15,7 @@ type NewGameRequestDto struct {
 type NewGameResponseDto struct {
 	Id       string            `json:"id"`
 	Start    time.Time         `json:"start"`
-	End      time.Time         `json:"end,omitempty"`
+	End      time.Time         `json:"end"`
 	Owner    model.Username    `json:"owner"`
 	Board    *boardResponseDto `json:"board"`
 	Finished bool              `json:"finished"`
