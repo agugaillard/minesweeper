@@ -1,7 +1,6 @@
 package error
 
-type invalidBoardProperties struct {
-}
+type invalidBoardProperties struct{}
 
 func (inm *invalidBoardProperties) Error() string {
 	return "invalid number of mines"

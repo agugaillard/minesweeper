@@ -1,7 +1,6 @@
 package error
 
-type exploreFlagged struct {
-}
+type exploreFlagged struct{}
 
 func (ef *exploreFlagged) Error() string {
 	return "can't explore flagged cell"

@@ -81,6 +81,7 @@ func (service *DefaultGameService) Save(gameId string) error {
 	return nil
 }
 
+// Errors: GameNotFound
 func (service *DefaultGameService) GetOwner(gameId string) (model.Username, error) {
 	game, err := cache.GameCache.Get(gameId)
 	if err != nil {

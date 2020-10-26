@@ -1,7 +1,6 @@
 package error
 
-type invalidPosition struct {
-}
+type invalidPosition struct{}
 
 func (ip *invalidPosition) Error() string {
 	return "invalid position"

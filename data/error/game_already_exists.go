@@ -1,7 +1,6 @@
 package error
 
-type gameAlreadyExists struct {
-}
+type gameAlreadyExists struct{}
 
 func (gae *gameAlreadyExists) Error() string {
 	return "game already exists"

@@ -1,7 +1,6 @@
 package error
 
-type gameNotFound struct {
-}
+type gameNotFound struct{}
 
 func (gae *gameNotFound) Error() string {
 	return "game not found"
