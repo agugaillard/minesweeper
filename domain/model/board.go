@@ -5,12 +5,12 @@ import (
 )
 
 type Board struct {
-	NumCols  int
-	NumRows  int
-	NumMines int
-	Cells    [][]*Cell
-	Explored int
-	Solved   bool
+	Cols     int       `json:"cols"`
+	Rows     int       `json:"rows"`
+	Mines    int       `json:"mines"`
+	Cells    [][]*Cell `json:"cells"`
+	Explored int       `json:"explored"`
+	Solved   bool      `json:"solved"`
 }
 
 type Position struct {
@@ -24,7 +24,7 @@ func NewBoard(numCols int, numRows int, numMines int, boardInitializer BoardInit
 		return nil, modelError.InvalidBoardProperties
 	}
 	cells := newCellsMatrix(numCols, numRows)
-	board := &Board{NumCols: numCols, NumRows: numRows, NumMines: numMines, Cells: cells}
+	board := &Board{Cols: numCols, Rows: numRows, Mines: numMines, Cells: cells}
 	board = boardInitializer.Initialize(board)
 	board.updateNearMines()
 	return board, nil
@@ -45,8 +45,8 @@ func newCellsMatrix(numCols int, numRows int) [][]*Cell {
 
 // Complexity: O(m * n)
 func (board Board) updateNearMines() {
-	for i := 0; i < board.NumCols; i++ {
-		for j := 0; j < board.NumRows; j++ {
+	for i := 0; i < board.Cols; i++ {
+		for j := 0; j < board.Rows; j++ {
 			position := Position{Col: i, Row: j}
 			nearMines := board.countNearMines(position)
 			cell, _ := board.getCell(position)
@@ -58,7 +58,7 @@ func (board Board) updateNearMines() {
 // Complexity: O(1)
 // Errors: InvalidPosition
 func (board Board) getCell(position Position) (*Cell, error) {
-	if position.Col >= 0 && position.Col < board.NumCols && position.Row >= 0 && position.Row < board.NumRows {
+	if position.Col >= 0 && position.Col < board.Cols && position.Row >= 0 && position.Row < board.Rows {
 		return board.Cells[position.Col][position.Row], nil
 	}
 	return nil, modelError.InvalidPosition
@@ -71,9 +71,9 @@ func (board Board) getAdjacencies(position Position) []Position {
 	for i := position.Col - 1; i <= position.Col+1; i++ {
 		for j := position.Row - 1; j <= position.Row+1; j++ {
 			// if its a valid column
-			if i >= 0 && i <= board.NumCols-1 {
+			if i >= 0 && i <= board.Cols-1 {
 				// if its a valid Row
-				if j >= 0 && j <= board.NumRows-1 {
+				if j >= 0 && j <= board.Rows-1 {
 					// if its not the cell itself
 					if !(i == position.Col && j == position.Row) {
 						adjacencies = append(adjacencies, Position{Col: i, Row: j})
@@ -103,7 +103,7 @@ func (board *Board) Explore(position Position) (bool, error) {
 		return lost, nil
 	}
 	board.Explored++
-	if board.Explored == board.NumCols*board.NumRows-board.NumMines {
+	if board.Explored == board.Cols*board.Rows-board.Mines {
 		board.Solved = true
 	}
 

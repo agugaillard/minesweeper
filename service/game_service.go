@@ -1,30 +1,34 @@
 package service
 
 import (
-	"github.com/agugaillard/minesweeper/data/cache"
-	"github.com/agugaillard/minesweeper/data/redis"
 	"github.com/agugaillard/minesweeper/domain/model"
+	"github.com/agugaillard/minesweeper/domain/repository"
 )
 
 type GameService interface {
-	NewGame(cols int, rows int, mines int, username model.Username) (*model.Game, error)
-	GetGame(id string) (*model.Game, error)
+	New(cols int, rows int, mines int, username model.Username) (*model.Game, error)
+	Get(id string) (*model.Game, error)
 	ExploreCell(gameId string, position model.Position) (*model.Game, error)
 	FlagCell(gameId string, position model.Position, flag model.Flag) error
-	Save(gameId string) error
 	GetOwner(gameId string) (model.Username, error)
 }
 
+func NewDefaultGameService(cache repository.GameRepository, persistence repository.GameRepository) *DefaultGameService {
+	return &DefaultGameService{cache, persistence}
+}
+
 type DefaultGameService struct {
+	cache       repository.GameRepository
+	persistence repository.GameRepository
 }
 
 // Errors: InvalidNumberOfMines
-func (service *DefaultGameService) NewGame(cols int, rows int, mines int, username model.Username) (*model.Game, error) {
+func (service *DefaultGameService) New(cols int, rows int, mines int, username model.Username) (*model.Game, error) {
 	game, err := model.NewGame(cols, rows, mines, username)
 	if err != nil {
 		return nil, err
 	}
-	err = cache.GameCache.New(game)
+	err = service.cache.New(game)
 	if err != nil {
 		return nil, err
 	}
@@ -32,22 +36,22 @@ func (service *DefaultGameService) NewGame(cols int, rows int, mines int, userna
 }
 
 // Errors: GameNotFound
-func (service *DefaultGameService) GetGame(id string) (*model.Game, error) {
-	game, err := cache.GameCache.Get(id)
+func (service *DefaultGameService) Get(id string) (*model.Game, error) {
+	game, err := service.cache.Get(id)
 	if err == nil {
 		return game, nil
 	}
-	game, err = redis.GameRedis.Get(id)
+	game, err = service.persistence.Get(id)
 	if err != nil {
 		return nil, err
 	}
-	_ = cache.GameCache.New(game)
+	_ = service.cache.New(game)
 	return game, nil
 }
 
 // Errors: ExploreFlagged, InvalidPosition, GameNotFound, InteractFinished
 func (service *DefaultGameService) ExploreCell(gameId string, position model.Position) (*model.Game, error) {
-	game, err := service.GetGame(gameId)
+	game, err := service.cache.Get(gameId)
 	if err != nil {
 		return nil, err
 	}
@@ -55,35 +59,29 @@ func (service *DefaultGameService) ExploreCell(gameId string, position model.Pos
 	if err != nil {
 		return nil, err
 	}
-	_ = cache.GameCache.Update(game)
+	_ = service.cache.Update(game)
+	_ = service.persistence.Update(game)
 	return game, nil
 }
 
 // Errors: GameNotFound, InvalidPosition, InteractFinished
 func (service *DefaultGameService) FlagCell(gameId string, position model.Position, flag model.Flag) error {
-	game, err := service.GetGame(gameId)
+	game, err := service.Get(gameId)
 	if err != nil {
 		return err
 	}
-	return game.Flag(position, flag)
-}
-
-// Errors: GameNotFound
-func (service *DefaultGameService) Save(gameId string) error {
-	game, err := service.GetGame(gameId)
+	err =game.Flag(position, flag)
 	if err != nil {
 		return err
 	}
-	err = redis.GameRedis.New(game)
-	if err != nil { // if the game already exists
-		_ = redis.GameRedis.Update(game)
-	}
+	_ = service.cache.Update(game)
+	_ = service.persistence.Update(game)
 	return nil
 }
 
 // Errors: GameNotFound
 func (service *DefaultGameService) GetOwner(gameId string) (model.Username, error) {
-	game, err := cache.GameCache.Get(gameId)
+	game, err := service.Get(gameId)
 	if err != nil {
 		return "", err
 	}

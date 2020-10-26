@@ -7,12 +7,12 @@ import (
 )
 
 type Game struct {
-	Id       string
-	Start    time.Time
-	End      time.Time
-	Owner    Username
-	Board    *Board
-	Finished bool
+	Id       string    `json:"id"`
+	Start    time.Time `json:"start"`
+	End      time.Time `json:"end"`
+	Owner    Username  `json:"owner"`
+	Board    *Board    `json:"board"`
+	Finished bool      `json:"finished"`
 }
 
 // Errors: InvalidNumberOfMines

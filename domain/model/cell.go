@@ -5,10 +5,10 @@ import (
 )
 
 type Cell struct {
-	Mined     bool
-	Flag      Flag
-	Explored  bool
-	NearMines int
+	Mined     bool `json:"mined"`
+	Flag      Flag `json:"flag"`
+	Explored  bool `json:"explored"`
+	NearMines int  `json:"near_mines"`
 }
 
 func NewMinedCell() *Cell {

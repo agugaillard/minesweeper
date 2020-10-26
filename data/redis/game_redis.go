@@ -9,16 +9,16 @@ import (
 )
 
 type gameRedis struct {
+	rdb *redis.Client
 }
 
 var (
-	rdb = redis.NewClient(&redis.Options{
+	ctx       = context.Background()
+	GameRedis = &gameRedis{redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
-	})
-	ctx       = context.Background()
-	GameRedis = gameRedis{}
+	})}
 )
 
 // Errors: GameAlreadyExists
@@ -29,13 +29,13 @@ func (gr *gameRedis) New(game *model.Game) error {
 	}
 	// Warning: assume the data is always valid
 	gameStr, _ := json.Marshal(game)
-	rdb.Set(ctx, game.Id, gameStr, 0)
+	gr.rdb.Set(ctx, game.Id, gameStr, 0)
 	return nil
 }
 
 // Errors: GameNotFound
 func (gr *gameRedis) Get(id string) (*model.Game, error) {
-	gameStr, err := rdb.Get(ctx, id).Result()
+	gameStr, err := gr.rdb.Get(ctx, id).Result()
 	if err != nil {
 		return nil, dataError.GameNotFound
 	}
@@ -50,7 +50,7 @@ func (gr *gameRedis) Remove(id string) error {
 	if _, err := gr.Get(id); err != nil {
 		return err
 	}
-	rdb.Del(ctx, id)
+	gr.rdb.Del(ctx, id)
 	return nil
 }
 
@@ -70,6 +70,6 @@ func (gr *gameRedis) Update(game *model.Game) error {
 	}
 	// Warning: assume the data is always valid
 	gameStr, _ := json.Marshal(game)
-	rdb.Set(ctx, game.Id, gameStr, 0)
+	gr.rdb.Set(ctx, game.Id, gameStr, 0)
 	return nil
 }

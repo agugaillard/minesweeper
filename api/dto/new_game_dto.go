@@ -43,9 +43,9 @@ type boardResponseDto struct {
 
 func newBoardDto(board *model.Board) *boardResponseDto {
 	return &boardResponseDto{
-		Cols:     board.NumCols,
-		Rows:     board.NumRows,
-		Mines:    board.NumMines,
+		Cols:     board.Cols,
+		Rows:     board.Rows,
+		Mines:    board.Mines,
 		Cells:    matrixToArray(board.Cells),
 		Explored: board.Explored,
 		Solved:   board.Solved,
@@ -72,7 +72,7 @@ func NewCellDto(cell *model.Cell) *CellResponseDto {
 }
 
 func matrixToArray(cells [][]*model.Cell) []*CellResponseDto {
-	arrayDto := make([]*CellResponseDto, len(cells)*len(cells[0]))
+	arrayDto := make([]*CellResponseDto, 0, len(cells)*len(cells[0]))
 	for i := 0; i < len(cells); i++ {
 		for j := 0; j < len(cells[0]); j++ {
 			cellDto := NewCellDto(cells[i][j])

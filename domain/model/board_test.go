@@ -14,15 +14,15 @@ func TestBoardProperties(t *testing.T) {
 		t.Errorf("unexpected error creating a board")
 		return
 	}
-	if board.NumCols != expectedCols {
+	if board.Cols != expectedCols {
 		t.Errorf("unexpected number of columns")
 	}
-	if board.NumRows != expectedRows {
+	if board.Rows != expectedRows {
 		t.Errorf("unexpected number of rows")
 	}
 	mines := 0
-	for i := 0; i < board.NumCols; i++ {
-		for j := 0; j < board.NumRows; j++ {
+	for i := 0; i < board.Cols; i++ {
+		for j := 0; j < board.Rows; j++ {
 			cell, err := board.getCell(Position{Col: i, Row: j})
 			if err != nil {
 				t.Errorf("unexpected error counting mines")
@@ -130,8 +130,8 @@ func TestBoardSolved(t *testing.T) {
 		t.Errorf("unexpected error creating a board")
 		return
 	}
-	for i := board.NumCols - 1; i >= 0 && !board.Solved; i-- {
-		for j := board.NumRows - 1; j >= 0 && !board.Solved; j-- {
+	for i := board.Cols - 1; i >= 0 && !board.Solved; i-- {
+		for j := board.Rows - 1; j >= 0 && !board.Solved; j-- {
 			_, err = board.Explore(Position{i, j})
 		}
 	}
@@ -139,7 +139,7 @@ func TestBoardSolved(t *testing.T) {
 	if cell.Explored {
 		t.Errorf("the board should be Solved before reaching this cell")
 	}
-	if board.Explored != board.NumCols*board.NumRows-board.NumMines {
+	if board.Explored != board.Cols*board.Rows-board.Mines {
 		t.Errorf("all cells should be explored when board is Solved")
 	}
 	if !board.Solved {
@@ -163,9 +163,9 @@ type AllTogetherMinesBoardInitializer struct{}
 
 func (*AllTogetherMinesBoardInitializer) Initialize(board *Board) *Board {
 	minesPlaced := 0
-	for i := 0; i < board.NumCols; i++ {
-		for j := 0; j < board.NumRows; j++ {
-			if minesPlaced < board.NumMines {
+	for i := 0; i < board.Cols; i++ {
+		for j := 0; j < board.Rows; j++ {
+			if minesPlaced < board.Mines {
 				board.Cells[i][j] = NewMinedCell()
 				minesPlaced++
 			} else {

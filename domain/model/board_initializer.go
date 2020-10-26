@@ -15,14 +15,14 @@ type RandomMinesBoardInitializer struct {
 // Complexity: O(m * n)
 func (*RandomMinesBoardInitializer) Initialize(board *Board) *Board {
 	rand.Seed(time.Now().UnixNano())
-	minesPositions := rand.Perm(board.NumRows * board.NumCols)[:board.NumMines]
-	isMine := make(map[int]bool, board.NumMines)
+	minesPositions := rand.Perm(board.Rows * board.Cols)[:board.Mines]
+	isMine := make(map[int]bool, board.Mines)
 	for _, minePosition := range minesPositions {
 		isMine[minePosition] = true
 	}
-	for i := 0; i < board.NumCols; i++ {
-		for j := 0; j < board.NumRows; j++ {
-			position := i*board.NumRows + j
+	for i := 0; i < board.Cols; i++ {
+		for j := 0; j < board.Rows; j++ {
+			position := i*board.Rows + j
 			if isMine[position] {
 				board.Cells[i][j] = NewMinedCell()
 			} else {

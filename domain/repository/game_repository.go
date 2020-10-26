@@ -9,13 +9,3 @@ type GameRepository interface {
 	GetOwner(id string) (model.Username, error)
 	Update(*model.Game) error
 }
-
-var gameRepository GameRepository
-
-func GetGameRepository() GameRepository {
-	return gameRepository
-}
-
-func InitGameRepository(gr GameRepository) {
-	gameRepository = gr
-}
