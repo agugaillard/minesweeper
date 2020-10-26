@@ -20,17 +20,11 @@ func (router *GameRouter) Routes(r *gin.Engine) {
 func (router *GameRouter) newGameHandler(context *gin.Context) {
 	var newGameDto dto.NewGameRequestDto
 	err := context.BindJSON(&newGameDto)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid payload",
-		})
+	if ok := handleError(context, err); !ok {
 		return
 	}
 	game, err := router.GameService.NewGame(newGameDto.Cols, newGameDto.Rows, newGameDto.Mines, "")
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"error": "unexpected error creating the game",
-		})
+	if ok := handleError(context, err); !ok {
 		return
 	}
 	context.JSON(http.StatusOK, dto.NewGameDto(game))
@@ -39,17 +33,11 @@ func (router *GameRouter) newGameHandler(context *gin.Context) {
 func (router *GameRouter) exploreCellHandler(context *gin.Context) {
 	var exploreCellRequest dto.ExploreCellRequestDto
 	err := context.BindJSON(&exploreCellRequest)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid payload",
-		})
+	if ok := handleError(context, err); !ok {
 		return
 	}
 	game, err := router.GameService.ExploreCell(exploreCellRequest.GameId, exploreCellRequest.Position)
-	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{
-			"error": "game not found",
-		})
+	if ok := handleError(context, err); !ok {
 		return
 	}
 	context.JSON(http.StatusOK, dto.NewGameDto(game))
@@ -58,16 +46,11 @@ func (router *GameRouter) exploreCellHandler(context *gin.Context) {
 func (router *GameRouter) flagCellHandler(context *gin.Context) {
 	var flagCellRequest dto.FlagCellRequestDto
 	err := context.BindJSON(&flagCellRequest)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid payload",
-		})
+	if ok := handleError(context, err); !ok {
 		return
 	}
 	err = router.GameService.FlagCell(flagCellRequest.GameId, flagCellRequest.Position, flagCellRequest.Flag)
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	if ok := handleError(context, err); !ok {
+		return
 	}
 }
