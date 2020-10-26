@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	dataError "github.com/agugaillard/minesweeper/data/error"
 	"github.com/agugaillard/minesweeper/domain/model"
 	"github.com/go-redis/redis/v8"
 )
@@ -21,10 +21,11 @@ var (
 	GameRedis = gameRedis{}
 )
 
+// Errors: GameAlreadyExists
 func (gr *gameRedis) New(game *model.Game) error {
 	_, err := gr.Get(game.Id)
 	if err == nil {
-		return errors.New("game already exists")
+		return dataError.GameAlreadyExists
 	}
 	// Warning: assume the data is always valid
 	gameStr, _ := json.Marshal(game)
@@ -32,10 +33,11 @@ func (gr *gameRedis) New(game *model.Game) error {
 	return nil
 }
 
+// Errors: GameNotFound
 func (gr *gameRedis) Get(id string) (*model.Game, error) {
 	gameStr, err := rdb.Get(ctx, id).Result()
 	if err != nil {
-		return nil, errors.New("game not found")
+		return nil, dataError.GameNotFound
 	}
 	var game *model.Game
 	// Warning: Assume the data is always valid
@@ -43,7 +45,8 @@ func (gr *gameRedis) Get(id string) (*model.Game, error) {
 	return game, nil
 }
 
-func (gr gameRedis) Remove(id string) error {
+// Errors: GameNotFound
+func (gr *gameRedis) Remove(id string) error {
 	if _, err := gr.Get(id); err != nil {
 		return err
 	}
@@ -51,7 +54,8 @@ func (gr gameRedis) Remove(id string) error {
 	return nil
 }
 
-func (gr gameRedis) GetOwner(id string) (model.Username, error) {
+// Errors: GameNotFound
+func (gr *gameRedis) GetOwner(id string) (model.Username, error) {
 	game, err := gr.Get(id)
 	if err != nil {
 		return "", err
@@ -59,7 +63,8 @@ func (gr gameRedis) GetOwner(id string) (model.Username, error) {
 	return game.Owner, nil
 }
 
-func (gr gameRedis) Update(game *model.Game) error {
+// Errors: GameNotFound
+func (gr *gameRedis) Update(game *model.Game) error {
 	if _, err := gr.Get(game.Id); err != nil {
 		return err
 	}

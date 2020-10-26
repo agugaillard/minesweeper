@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/agugaillard/minesweeper/data/cache"
+	"github.com/agugaillard/minesweeper/data/redis"
 	"github.com/agugaillard/minesweeper/domain/model"
 )
 
@@ -10,6 +11,7 @@ type GameService interface {
 	GetGame(id string) (*model.Game, error)
 	ExploreCell(gameId string, position model.Position) (*model.Game, error)
 	FlagCell(gameId string, position model.Position, flag model.Flag) error
+	Save(gameId string) error
 }
 
 type DefaultGameService struct {
@@ -58,4 +60,17 @@ func (service *DefaultGameService) FlagCell(gameId string, position model.Positi
 		return err
 	}
 	return game.Flag(position, flag)
+}
+
+// Errors: GameNotFound
+func (service *DefaultGameService) Save(gameId string) error {
+	game, err := service.GetGame(gameId)
+	if err != nil {
+		return err
+	}
+	err = redis.GameRedis.New(game)
+	if err != nil { // if the game already exists
+		_ = redis.GameRedis.Update(game)
+	}
+	return nil
 }

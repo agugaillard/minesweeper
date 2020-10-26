@@ -15,6 +15,7 @@ func (router *GameRouter) Routes(r *gin.Engine) {
 	r.POST("/game", router.newGameHandler)
 	r.POST("/game/:id/explore", router.exploreCellHandler)
 	r.POST("/game/:id/flag", router.flagCellHandler)
+	r.POST("/game/:id/save", router.saveHandler)
 }
 
 func (router *GameRouter) newGameHandler(context *gin.Context) {
@@ -50,6 +51,13 @@ func (router *GameRouter) flagCellHandler(context *gin.Context) {
 		return
 	}
 	err = router.GameService.FlagCell(flagCellRequest.GameId, flagCellRequest.Position, flagCellRequest.Flag)
+	if ok := handleError(context, err); !ok {
+		return
+	}
+}
+
+func (router *GameRouter) saveHandler(context *gin.Context) {
+	err := router.GameService.Save(context.Param("id"))
 	if ok := handleError(context, err); !ok {
 		return
 	}
