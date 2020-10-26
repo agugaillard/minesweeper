@@ -108,7 +108,7 @@ func TestFlagCell(t *testing.T) {
 		Flag:     model.RedFlag,
 		Username: "user",
 	})
-	req, _ := http.NewRequest("POST", "/game/"+game.Id+"/flag", bytes.NewBuffer(body))
+	req, _ := http.NewRequest("PUT", "/game/"+game.Id+"/flag", bytes.NewBuffer(body))
 	r.ServeHTTP(w, req)
 
 	if w.Code != 200 {

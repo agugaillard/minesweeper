@@ -16,7 +16,7 @@ type GameRouter struct {
 func (router *GameRouter) Routes(r *gin.Engine) {
 	r.POST("/game", router.newGameHandler)
 	r.POST("/game/:id/explore", router.exploreCellHandler)
-	r.POST("/game/:id/flag", router.flagCellHandler)
+	r.PUT("/game/:id/flag", router.flagCellHandler)
 	r.POST("/game/:id/save", router.saveHandler)
 	r.POST("/game/:id/resume", router.resumeHandler)
 }
