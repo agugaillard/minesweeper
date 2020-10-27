@@ -1,0 +1,278 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Minesweeper"
+host: "18.228.204.155"
+tags:
+- name: "game"
+  description: ""
+schemes:
+- "http"
+paths:
+  /game:
+    post:
+      tags:
+      - "game"
+      summary: "Create new game"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Properties of the new game"
+        required: true
+        schema:
+          $ref: "#/definitions/NewGameRequest"
+      responses:
+        "200":
+          description: "New game created"
+          schema:
+            $ref: '#/definitions/GameResponse'
+        "400":
+          description: "Invalid board properties; Invalid user"
+  /game/{gameId}/explore:
+    post:
+      tags:
+      - "game"
+      summary: "Explore cell"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: "string"
+        name: "gameId"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Position to explore"
+        required: true
+        schema:
+          $ref: '#/definitions/ExploreCellRequest'
+      responses:
+        "200":
+          description: "Game state after exploring cell"
+          schema:
+            $ref: '#/definitions/GameResponse'
+        "400":
+          description: "Trying to explore flagged cell; Invalid position; Invalid user"
+        "403":
+          description: "User is not authorized"
+        "404":
+          description: "Game not found"
+  /game/{gameId}/flag:
+    put:
+      tags:
+      - "game"
+      summary: "Flag cell"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: "string"
+        name: "gameId"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Position to flag"
+        required: true
+        schema:
+          $ref: '#/definitions/FlagCellRequest'
+      responses:
+        "200":
+          description: "Game state after flagging cell"
+          schema:
+            $ref: '#/definitions/GameResponse'
+        "400":
+          description: "Invalid position; Invalid user"
+        "403":
+          description: "User is not authorized"
+        "404":
+          description: "Game not found"
+  /game/{gameId}/resume:
+    post:
+      tags:
+      - "game"
+      summary: "Resume game"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: "string"
+        name: "gameId"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "User"
+        required: true
+        schema:
+          $ref: '#/definitions/UserGameRequest'
+      responses:
+        "200":
+          description: "Game to resume"
+        "400":
+          description: "Invalid user"
+        "403":
+          description: "User is not authorized"
+        "404":
+          description: "Game not found"
+definitions:
+  NewGameRequest:
+    type: "object"
+    properties:
+      cols:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "number of columns"
+      rows:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "number of rows"
+      mines:
+        type: "integer"
+        format: "int64"
+        example: 8
+        description: "number of mines"
+      username:
+        type: "string"
+        example: "myuser"
+        description: "owner of the new game"
+  GameResponse:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "b3e70c6a-e9d2-42c5-a831-f28eefa0c5ac"
+        description: "game id"
+      start:
+        type: "string"
+        example: "2020-10-26T15:19:22.647622-03:00"
+        description: "game start time"
+      end:
+        type: "string"
+        example: "2020-10-27T15:19:22.647622-03:00"
+        description: "game end time"
+      board:
+        $ref: '#/definitions/BoardResponse'
+      finished:
+        type: "boolean"
+        example: false
+        description: "finished"
+  BoardResponse:
+    type: "object"
+    properties:
+      cols:
+        type: "integer"
+        format: "int32"
+        example: 5
+        description: "number of columns"
+      rows:
+        type: "integer"
+        format: "int32"
+        example: 5
+        description: "number of rows"
+      mines:
+        type: "integer"
+        format: "int32"
+        example: 8
+        description: "number of mines"
+      explored:
+        type: "integer"
+        format: "int32"
+        example: 0
+        description: "explored"
+      solved:
+        type: "boolean"
+        example: false
+        description: "solved"
+      cells:
+        type: "array"
+        items:
+          $ref: '#/definitions/CellResponse'
+        description: "cells"
+  CellResponse:
+    type: "object"
+    properties:
+      col:
+        type: "integer"
+        format: "int32"
+        example: 0
+        description: "column"
+      row:
+        type: "integer"
+        format: "int32"
+        example: 0
+        description: "row"
+      explored:
+        type: "boolean"
+        example: false
+        description: "explored"
+      near_mines:
+        type: "integer"
+        format: "int32"
+        example: 0
+        description: "number of adjacent mines"
+      flag:
+        type: "string"
+        enum:
+        - "none"
+        - "red_flag"
+        - "question_mark"
+        description: "flag"
+  ExploreCellRequest:
+    type: "object"
+    properties:
+      col:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "number of columns"
+      row:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "number of rows"
+      username:
+        type: "string"
+        example: "myuser"
+        description: "user calling"
+  FlagCellRequest:
+    type: "object"
+    properties:
+      col:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "number of columns"
+      row:
+        type: "integer"
+        format: "int64"
+        example: 5
+        description: "number of rows"
+      flag:
+        type: "string"
+        enum:
+        - "red_flag"
+        - "none"
+        - "question_mark"
+      username:
+        type: "string"
+        example: "myuser"
+        description: "user calling"
+  UserGameRequest:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        example: "myuser"
+        description: "user calling"
