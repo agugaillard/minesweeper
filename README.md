@@ -1,39 +1,21 @@
-# minesweeper-API
-API test
+# Decisions
 
-We ask that you complete the following challenge to evaluate your development skills. Please use the programming language and framework discussed during your interview to accomplish the following task.
+* For simplicity reasons
+    * I haven't implemented a `sign in` endpoint.
+    * I chose to send the `user` within the payload. In a real case, I would have used jwt. Because of this decision, the `resume` endpoint is a `POST` instead of a `GET`.
+    * I chose `redis` as the main storage. In a real minesweeper I would have chosen another `NoSQL` data base, particularly `MongoDB`.
 
-PLEASE DO NOT FORK THE REPOSITORY. WE NEED A PUBLIC REPOSITORY FOR THE REVIEW. 
+* Known bugs
+    * When creating a game, in the response you can find the `end` attribute with the default value for `time`. The field should be omitted.
+    * `SwaggerUI` can't access the `aws` instance. That's why I also give you some `curl`s. 
 
-## The Game
-Develop the classic game of [Minesweeper](https://en.wikipedia.org/wiki/Minesweeper_(video_game))
+* Things I consider important
+    * I wrote a custom `GameResponseDto` because I think that the user should never *see* if a cell is mined or not. With this `dto` I can hide that property.
+    * Even though a `cell` shouldn't know anything about its adjacent cells, I added the attribute `NearMines` because in another way, the `board` should keep a `map` with this information. So I preferred to give it to the `cell`.  
+    * By design, a `flagged cell` can't be explored.
+    * Internal errors are never specified to the user.
+    * The `flag` endpoint is a `PUT` because it is idempotent.
 
-## Show your work
-
-1.  Create a Public repository ( please dont make a pull request, clone the private repository and create a new plublic one on your profile)
-2.  Commit each step of your process so we can follow your thought process.
-
-## What to build
-The following is a list of items (prioritized from most important to least important) we wish to see:
-* Design and implement  a documented RESTful API for the game (think of a mobile app for your API)
-* Implement an API client library for the API designed above. Ideally, in a different language, of your preference, to the one used for the API
-* When a cell with no adjacent mines is revealed, all adjacent squares will be revealed (and repeat)
-* Ability to 'flag' a cell with a question mark or red flag
-* Detect when game is over
-* Persistence
-* Time tracking
-* Ability to start a new game and preserve/resume the old ones
-* Ability to select the game parameters: number of rows, columns, and mines
-* Ability to support multiple users/accounts
- 
-## Deliverables we expect:
-* URL where the game can be accessed and played (use any platform of your preference: heroku.com, aws.amazon.com, etc)
-* Code in a public Github repo
-* README file with the decisions taken and important notes
-
-## Time Spent
-You need to fully complete the challenge. We suggest not spending more than 5 days total.  Please make commits as often as possible so we can see the time you spent and please do not make one commit.  We will evaluate the code and time spent.
- 
-What we want to see is how well you handle yourself given the time you spend on the problem, how you think, and how you prioritize when time is sufficient to solve everything.
-
-Please email your solution as soon as you have completed the challenge or the time is up.
+* Extras
+    * I implemented a memory cache.
+    * At the beginning of the project, I wondered if using `DDD` with `Go` would be nice. I wasn't sure, even though `DDD` is language agnostic. So I used `DDD` as a proof of concept. The results were nice in my opinion, I will give it another try in the future.
