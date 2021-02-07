@@ -10,6 +10,8 @@ import (
 
 func main() {
 	r := gin.Default()
+	healthCheckRouter := router.HealthCheckRouter{}
+	healthCheckRouter.Routes(r)
 	gameRouter := router.GameRouter{
 		GameService: service.NewDefaultGameService(cache.GameCache, redis.GameRedis),
 	}
