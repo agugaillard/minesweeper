@@ -22,7 +22,7 @@ type DefaultGameService struct {
 	persistence repository.GameRepository
 }
 
-// Errors: InvalidNumberOfMines
+// Errors: InvalidNumberOfMines, GameAlreadyExists
 func (service *DefaultGameService) New(cols int, rows int, mines int, username model.Username) (*model.Game, error) {
 	game, err := model.NewGame(cols, rows, mines, username)
 	if err != nil {
@@ -70,7 +70,7 @@ func (service *DefaultGameService) FlagCell(gameId string, position model.Positi
 	if err != nil {
 		return err
 	}
-	err =game.Flag(position, flag)
+	err = game.Flag(position, flag)
 	if err != nil {
 		return err
 	}
